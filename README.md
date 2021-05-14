@@ -10,14 +10,14 @@ TODO
 
 ## How to Install
 ```
-git clone https://github.com/hhj1897/emotion_recognition.git
-cd emotion_recognition
+git clone https://github.com/ibug-group/au_detection.git
+cd au_detection
 pip install -e .
 ```
 
 ## How to Test
-* To test on live video: `python emotion_recognition_test.py [-i webcam_index]`
-* To test on a video file: `python emotion_recognition_test.py [-i input_file] [-o output_file]`
+* To test on live video: `python au_detection_test.py [-i webcam_index]`
+* To test on a video file: `python au_detection_test.py [-i input_file] [-o output_file]`
 
 ## How to Use
 TODO

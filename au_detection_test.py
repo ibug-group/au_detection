@@ -135,7 +135,6 @@ def main() -> None:
                 au_probs = au_detector(fan_features)
                 current_time = time.time()
                 elapsed_time3 = current_time - start_time
-                print(au_probs)
 
                 # Textural output
                 print(f'Frame #{frame_number} processed in {elapsed_time * 1000.0:.04f} + ' +
@@ -143,12 +142,18 @@ def main() -> None:
                       f'{len(faces)} faces analysed.')
 
                 # Rendering
-                for idx, (face, lm, sc) in enumerate(zip(faces, landmarks, scores)):
+                for idx, (face, lm, sc, probs) in enumerate(zip(faces, landmarks, scores, au_probs)):
                     bbox = face[:4].astype(int)
                     cv2.rectangle(frame, (bbox[0], bbox[1]), (bbox[2], bbox[3]), color=(0, 0, 255), thickness=2)
                     plot_landmarks(frame, lm, sc, threshold=args.alignment_threshold)
                     if len(face) > 5:
                         plot_landmarks(frame, face[5:].reshape((-1, 2)), pts_radius=3)
+                    for loc, (au_idx, au_prob) in enumerate(zip(au_detector.config.au_indices, probs)):
+                        colour = (0, round(255 * au_prob), round(255 * (1 - au_prob)))
+                        cv2.circle(frame, (bbox[2] + 10, bbox[1] + 15 * loc + 5),
+                                   radius=5, thickness=-1, color=colour, lineType=cv2.LINE_AA)
+                        cv2.putText(frame, f'AU {au_idx}', (bbox[2] + 20, bbox[1] + 15 * loc + 10),
+                                    cv2.FONT_HERSHEY_DUPLEX, 0.45, colour, lineType=cv2.LINE_AA)
 
                 # Write the frame to output video (if recording)
                 if out_vid is not None:

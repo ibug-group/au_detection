@@ -67,7 +67,7 @@ class AUNet(nn.Module):
         self.emo_net_2 = nn.Sequential(*self.emo_convs)
         self.avg_pool_2 = nn.AvgPool2d(4)
         self.emo_fc_2 = nn.Sequential(nn.Linear(256, 128), nn.BatchNorm1d(128), nn.ReLU(inplace=True),
-                                      nn.Linear(128, len(self.config.aus)))
+                                      nn.Linear(128, len(self.config.au_indices)))
 
     def forward(self, x):
         emo_feat = self.conv1x1_input_emo_2(x)

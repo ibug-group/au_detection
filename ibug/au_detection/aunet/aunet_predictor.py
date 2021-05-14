@@ -34,12 +34,14 @@ class AUNetPredictor(object):
         name = name.lower()
         if name == 'aunet_bdaw':
             return SimpleNamespace(weights=os.path.join(os.path.dirname(__file__), 'weights', 'aunet_bdaw.pth'),
-                                   config=SimpleNamespace(num_input_channels=768, input_size=64, n_blocks=4,
-                                                          aus=(1, 2, 4, 6, 7, 9, 10, 12, 14, 15, 17, 23, 24, 25, 26)))
+                                   config=SimpleNamespace(
+                                       num_input_channels=768, input_size=64, n_blocks=4,
+                                       au_indices=(1, 2, 4, 6, 7, 9, 10, 12, 14, 15, 17, 23, 24, 25, 26)))
         elif name == 'aunet_bdaw_alt':
             return SimpleNamespace(weights=os.path.join(os.path.dirname(__file__), 'weights', 'aunet_bdaw_alt.pth'),
-                                   config=SimpleNamespace(num_input_channels=768, input_size=64, n_blocks=4,
-                                                          aus=(1, 2, 4, 6, 7, 9, 10, 12, 14, 15, 17, 23, 24, 25, 26)))
+                                   config=SimpleNamespace(
+                                       num_input_channels=768, input_size=64, n_blocks=4,
+                                       au_indices=(1, 2, 4, 6, 7, 9, 10, 12, 14, 15, 17, 23, 24, 25, 26)))
         else:
             raise ValueError("name must be set to either aunet_bdaw or aunet_bdaw_alt")
 
@@ -50,4 +52,4 @@ class AUNetPredictor(object):
             results = torch.sigmoid(results).cpu().numpy()
             return results
         else:
-            return np.empty(shape=(0, len(self.config.aus)), dtype=np.float32)
+            return np.empty(shape=(0, len(self.config.au_indices)), dtype=np.float32)
