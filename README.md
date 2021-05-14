@@ -1,4 +1,4 @@
-# ibug.emotion_recognition
+# ibug.au_detection
 TODO
 
 ## Prerequisites

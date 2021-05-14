@@ -17,7 +17,7 @@ def clean_repo():
 # Read version string
 _version = None
 script_folder = os.path.realpath(os.path.dirname(__file__))
-with open(os.path.join(script_folder, 'ibug', 'emotion_recognition', '__init__.py')) as init:
+with open(os.path.join(script_folder, 'ibug', 'au_detection', '__init__.py')) as init:
     for line in init.read().splitlines():
         fields = line.replace('=', ' ').replace('\'', ' ').replace('\"', ' ').replace('\t', ' ').split()
         if len(fields) >= 2 and fields[0] == '__version__':
@@ -28,12 +28,12 @@ if _version is None:
 
 # Installation
 config = {
-    'name': 'ibug_emotion_recognition',
+    'name': 'ibug_au_detection',
     'version': _version,
-    'description': 'Emotion recognition using face alignment features with spatial attention.',
-    'author': 'Jie Shen',
+    'description': 'Facial action unit (AU) detection using EmoNet.',
+    'author': 'Jing Yang & Jie Shen',
     'author_email': 'js1907@imperial.ac.uk',
-    'packages': ['ibug.emotion_recognition'],
+    'packages': ['ibug.au_detection'],
     'install_requires': ['numpy>=1.16.0', 'torch>=1.1.0'],
     'zip_safe': False
 }
