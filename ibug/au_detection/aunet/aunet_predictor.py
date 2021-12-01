@@ -42,8 +42,13 @@ class AUNetPredictor(object):
                                    config=SimpleNamespace(
                                        num_input_channels=768, input_size=64, n_blocks=4,
                                        au_indices=(1, 2, 4, 6, 7, 9, 10, 12, 14, 15, 17, 23, 24, 25, 26)))
+        elif name == 'aunet_bdaw_vae':
+            return SimpleNamespace(weights=os.path.join(os.path.dirname(__file__), 'weights', 'aunet_bdaw_vae.pth'),
+                                   config=SimpleNamespace(
+                                       num_input_channels=768, input_size=64, n_blocks=4,
+                                       au_indices=(1, 2, 4, 6, 7, 9, 10, 12, 14, 15, 17, 23, 24, 25, 26)))
         else:
-            raise ValueError("name must be set to either aunet_bdaw or aunet_bdaw_alt")
+            raise ValueError("name must be set to either aunet_bdaw, aunet_bdaw_alt, or aunet_bdaw_vae")
 
     @torch.no_grad()
     def __call__(self, fan_features: torch.Tensor) -> np.ndarray:

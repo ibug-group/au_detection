@@ -29,6 +29,8 @@ def main() -> None:
     parser.add_argument('--detection-weights', '-dw', default=None,
                         help='Weights to be loaded for face detection, ' +
                              'can be either resnet50 or mobilenet0.25 when using RetinaFace')
+    parser.add_argument('--detection-alternative-pth', '-dp', default=None,
+                        help='Alternative pth file to be loaded for face detection')
     parser.add_argument('--detection-device', '-dd', default='cuda:0',
                         help='Device to be used for face detection (default=cuda:0)')
 
@@ -37,14 +39,20 @@ def main() -> None:
     parser.add_argument('--alignment-method', '-am', default='fan',
                         help='Face alignment method, must be set to FAN')
     parser.add_argument('--alignment-weights', '-aw', default=None,
-                        help='Weights to be loaded for face alignment, can be either 2DFAN2 or 2DFAN4')
+                        help='Weights to be loaded for face alignment, can be either 2DFAN2, 2DFAN4, ' +
+                             'or 2DFAN2_ALT (default=2DFAN2)')
+    parser.add_argument('--alignment-alternative-pth', '-ap', default=None,
+                        help='Alternative pth file to be loaded for face alaignment')
     parser.add_argument('--alignment-device', '-ad', default='cuda:0',
                         help='Device to be used for face alignment (default=cuda:0)')
 
     parser.add_argument('--au-method', '-um', default='aunet',
                         help='AU detection method, must be set to AUNet')
     parser.add_argument('--au-weights', '-uw', default=None,
-                        help='Weights to be loaded for AU detection, can be either AUNet_BDAW or AUNet_BDAW')
+                        help='Weights to be loaded for AU detection, can be either AUNet_BDAW, AUNet_BDAW_ALT, ' +
+                             'or AUNet_BDAW_VAE (default=AUNet_BDAW)')
+    parser.add_argument('--au-alternative-pth', '-up', default=None,
+                        help='Alternative pth file to be loaded for AU detection')
     parser.add_argument('--au-device', '-ud', default='cuda:0',
                         help='Device to be used for AU detection (default=cuda:0)')
     args = parser.parse_args()
@@ -59,34 +67,45 @@ def main() -> None:
         # Create the face detector
         args.detection_method = args.detection_method.lower()
         if args.detection_method == 'retinaface':
-            face_detector = RetinaFacePredictor(threshold=args.detection_threshold, device=args.detection_device,
-                                                model=(RetinaFacePredictor.get_model(args.detection_weights)
-                                                       if args.detection_weights else None))
-            print('Face detector created using RetinaFace.')
+            face_detector_class = (RetinaFacePredictor, 'RetinaFace')
         elif args.detection_method == 's3fd':
-            face_detector = S3FDPredictor(threshold=args.detection_threshold, device=args.detection_device,
-                                          model=(S3FDPredictor.get_model(args.detection_weights)
-                                                 if args.detection_weights else None))
-            print('Face detector created using S3FD.')
+            face_detector_class = (S3FDPredictor, 'S3FD')
         else:
             raise ValueError('detector-method must be set to either RetinaFace or S3FD')
+        if args.detection_weights is None:
+            fd_model = face_detector_class[0].get_model()
+        else:
+            fd_model = face_detector_class[0].get_model(args.detection_weights)
+        if args.detection_alternative_pth is not None:
+            fd_model.weights = args.detection_alternative_pth
+        face_detector = face_detector_class[0](
+            threshold=args.detection_threshold, device=args.detection_device, model=fd_model)
+        print(f"Face detector created using {face_detector_class[1]} ({fd_model.weights}).")
 
         # Create the landmark detector
         args.alignment_method = args.alignment_method.lower()
         if args.alignment_method == 'fan':
-            landmark_detector = FANPredictor(device=args.alignment_device,
-                                             model=(FANPredictor.get_model(args.alignment_weights)
-                                                    if args.alignment_weights else None))
-            print('Landmark detector created using FAN.')
+            if args.alignment_weights is None:
+                fa_model = FANPredictor.get_model()
+            else:
+                fa_model = FANPredictor.get_model(args.alignment_weights)
+            if args.alignment_alternative_pth is not None:
+                fa_model.weights = args.alignment_alternative_pth
+            landmark_detector = FANPredictor(device=args.alignment_device, model=fa_model)
+            print(f"Landmark detector created using FAN ({fa_model.weights}).")
         else:
             raise ValueError('alignment-method must be set to FAN')
 
         # Create the AU detector
         args.au_method = args.au_method.lower()
         if args.au_method == 'aunet':
-            au_detector = AUNetPredictor(device=args.au_device,
-                                         model=(AUNetPredictor.get_model(args.au_weights)
-                                                if args.au_weights else None))
+            if args.au_weights is None:
+                au_model = AUNetPredictor.get_model()
+            else:
+                au_model = AUNetPredictor.get_model(args.au_weights)
+            if args.au_alternative_pth is not None:
+                au_model.weights = args.au_alternative_pth
+            au_detector = AUNetPredictor(device=args.au_device, model=au_model)
             print('AU detector created using AUNet.')
         else:
             raise ValueError('au-method must be set to AUNet')
