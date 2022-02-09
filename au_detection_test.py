@@ -7,7 +7,6 @@ from ibug.face_alignment import FANPredictor
 from ibug.face_alignment.utils import plot_landmarks
 from ibug.face_detection import RetinaFacePredictor, S3FDPredictor
 from ibug.au_detection import AUNetPredictor
-from ibug.au_detection.utils import get_au_name
 
 
 def main() -> None:
@@ -49,7 +48,7 @@ def main() -> None:
     parser.add_argument('--au-method', '-um', default='aunet',
                         help='AU detection method, must be set to AUNet')
     parser.add_argument('--au-weights', '-uw', default=None,
-                        help='Weights to be loaded for AU detection, can be either AUNet_BDAW, AUNet_BDAW_ALT, ' +
+                        help='Weights to be loaded for AU detection, can be either AUNet_BDAW, AUNet_BDAW2, ' +
                              'or AUNet_BDAW_VAE (default=AUNet_BDAW)')
     parser.add_argument('--au-alternative-pth', '-up', default=None,
                         help='Alternative pth file to be loaded for AU detection')
